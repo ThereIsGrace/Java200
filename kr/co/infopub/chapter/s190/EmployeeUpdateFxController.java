@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -22,7 +23,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import kr.co.infopub.chapter.s190.dto.DepConvert;
 import kr.co.infopub.chapter.s190.dto.Department;
@@ -32,15 +32,21 @@ import kr.co.infopub.chapter.s190.dto.Employee;
 import kr.co.infopub.chapter.s190.dto.EmployeeDto;
 import kr.co.infopub.chapter.s190.model.EmployeeDAO;
 import kr.co.infopub.chapter.s190.util.PTS;
-
-public class EmployeeSearchFxController {
+/**HR 관리자 프로그램의 update를 실행하는 컨트롤러입니다.
+ * oracle DB로 구현을 하였으며, TRIGGER를 사용하지 않아 제약사항때문에 일부 항목은 업데이트 가능하지 않습니다.
+ * oracle XE가 제공하는 기본 테이블들은 차후에도 계속 사용해야 하므로 나중에 새로 테이블을 만들고 트리거를 이용하여 전체를 
+ * 수정 가능한 관리자 프로그램을 만들 예정입니다.
+ * @author 정재은
+ * 새로 구현할 기능 : Trigger를 사용해 부모테이블부터 고치고 자식 테이블 수정/삭제 가능하게 하기
+ * 오류 : datepicker 편집 불가능하게 하기
+ */
+public class EmployeeUpdateFxController {
 	    @FXML
 	    private TextField tfphone;
 
 	    @FXML
 	    private TextField tfdepartid;
 
-	   
 	    @FXML
 	    private AnchorPane bottomsplit;
 
@@ -105,9 +111,6 @@ public class EmployeeSearchFxController {
 
 	    @FXML
 	    private Label lbempid;
-	    
-	    @FXML
-	    private TextField tfsearchname;
 
 	    @FXML
 	    private TableView<Employee> employeeTable;
@@ -151,6 +154,9 @@ public class EmployeeSearchFxController {
 	    private Label lbdepartid2;
 	    
 	    @FXML
+	    private TextField tfupdatemanager;
+	    
+	    @FXML
 	    private ComboBox<String> cbJobid;
 
 	    @FXML
@@ -173,64 +179,67 @@ public class EmployeeSearchFxController {
 	    
 	    @FXML
 	    private Button btnSearchManager  ;
+	    
 	    @FXML
 	    private TextField tfsearchmanager  ;
 	    
+	    
+	    
+	    
 	    private void clear(){
-	    	tfempid.setText("");
-			tffirstname.setText("");
-			tflastname.setText("");
-			tfemail.setText("");
-			tfhiredate.getEditor().setText("");
-			tfphone.setText("");
-			tfcommis.setText("");
-			tfsalary.setText("");
-			tfdepartid.setText("");
-			tfjobid.setText("");
-			tfmanagerid.setText("");
-			tfsearchmanager.setText("");
+//	    	tfempid.setText("");
+//			tffirstname.setText("");
+//			tflastname.setText("");
+//			tfemail.setText("");
+//			tfhiredate.getEditor().setText("");
+//			tfphone.setText("");
+//			tfcommis.setText("");
+//			tfsalary.setText("");
+//			tfdepartid.setText("");
+//			tfjobid.setText("");
+//			tfmanagerid.setText("");
+//			tfsearchmanager.setText("");
 	    }
-	    private void edit(boolean b){
-	    	tfempid.setEditable(b);
+	    //정보 수정/삭제 준비 버튼 누르기 전까지 수정이 가능함, 그러나 입력을 해서 새로운 인스턴스를 생성하진 않음 
+	    private void edit(boolean b){ 
+	    	tfempid.setEditable(false);
 			tffirstname.setEditable(b);
 			tflastname.setEditable(b);
 			tfemail.setEditable(b);
-			tfhiredate.setEditable(b);
+			tfhiredate.setEditable(false);
 			tfphone.setEditable(b);
 			tfcommis.setEditable(b);
 			tfsalary.setEditable(b);
 			tfdepartid.setEditable(b);
 			tfjobid.setEditable(b);
 			tfmanagerid.setEditable(b);
-			tfsearchmanager.setEditable(b);
 	    }
+	    //무결성 제약조건으로 인해 사용할 수 없는 텍스트필드는 확인용으로만 사용
 	    private void edit2(boolean b){
-	    	
-	    	//tfempid.setEditable(b);
+	    	tfempid.setEditable(false);
 			tffirstname.setEditable(b);
 			tflastname.setEditable(b);
 			tfemail.setEditable(b);
-			//tfhiredate.setEditable(b);
+			tfhiredate.getEditor().setEditable(false);
 			tfphone.setEditable(b);
 			tfcommis.setEditable(b);
 			tfsalary.setEditable(b);
 			
 			tfsearchmanager.setEditable(b);
-			//tfdepartid.setEditable(b);
-			//tfjobid.setEditable(b);
-			//tfmanagerid.setEditable(b);
+			tfdepartid.setEditable(false);
+			tfjobid.setEditable(false);
+			tfmanagerid.setEditable(false);
 			if(b){
 				tffirstname.setStyle("-fx-background-color: #0000ff");
 				tflastname.setStyle("-fx-background-color: #0000ff");
 				tfemail.setStyle("-fx-background-color: #0000ff");
-				tfhiredate.setStyle("-fx-background-color: #0000ff");
+				tfhiredate.setStyle("-fx-background-color: #cccccc");
 				tfphone.setStyle("-fx-background-color: #0000ff");
 				tfcommis.setStyle("-fx-background-color: #cccccc");
 				tfsalary.setStyle("-fx-background-color: #cccccc");
 				tfdepartid.setStyle("-fx-background-color: #cccccc");
 				tfjobid.setStyle("-fx-background-color: #cccccc");
 				tfmanagerid.setStyle("-fx-background-color: #cccccc");
-				tfsearchmanager.setStyle("-fx-background-color: #cccccc");
 			}else{
 				tffirstname.setStyle("-fx-background-color: #ffffff");
 				tflastname.setStyle("-fx-background-color: #ffffff");
@@ -242,8 +251,8 @@ public class EmployeeSearchFxController {
 				tfdepartid.setStyle("-fx-background-color: #ffffff");
 				tfjobid.setStyle("-fx-background-color: #ffffff");
 				tfmanagerid.setStyle("-fx-background-color: #ffffff");
-				tfsearchmanager.setStyle("-fx-background-color: #ffffff");
 			}
+			
 	    }
 
 	    @FXML
@@ -266,21 +275,19 @@ public class EmployeeSearchFxController {
 	         empEmailColumn3.setCellValueFactory(cellData -> cellData.getValue().emailProperty());
 	         
 	         
-	         //tfhiredate.setPromptText("생일을 선택하세요.");
-	         //tfhiredate.setMaxWidth(381.0);
-	         //tfhiredate.setStyle("-fx-background-color: #0000ff");
-	         //
 	         employeeTable.setOnMouseClicked(e ->{
 	         	if(employeeTable.getSelectionModel().getSelectedItem()!=null ){
 	         		 edit(false);
-	         		 edit2(false);
+	         		 edit2(true);
 			    	 clear();
+			    	 //-----
+			    	 btnAddAfEmployee.setVisible(true);
+			    	 
 	         		Employee user = (Employee)employeeTable.getSelectionModel().getSelectedItem();
 	         		try {
 	         			//DB에서 찾아서
-	         			EmployeeDto edto =employeeDAO.findEmployeeById(user.getEmployeeId()+"");
+	         			EmployeeDto edto=employeeDAO.findEmployeeById(user.getEmployeeId()+"");
 						Employee emp=EmpConvert.toPro(edto);
-						
 						//현재 정보를 보인다.
 						tfempid.setText(emp.getEmployeeId()+"");
 						tffirstname.setText(emp.getFirstName());
@@ -296,7 +303,7 @@ public class EmployeeSearchFxController {
 						tfmanagerid.setText(emp.getManagerId()+"");
 						System.out.println("------->"+emp.getDepartmentId()+"");
 					} catch (SQLException e1) {
-						System.out.println("DB에서 상세정보를 가져오다 에러가 발생했습니다.");
+						System.out.println("DB에서 직원 상세정보를 가져오지 못했습니다.");
 					}
 	             	//System.out.println(user.getEmployeeId()+"  "+user.getFirstName()+" "+user.getLastName());
 	             	//lbhello.setText(user.getEmployeeId()+"  "+user.getFirstName()+" "+user.getLastName());
@@ -304,44 +311,36 @@ public class EmployeeSearchFxController {
 	           }
 	         );
 	         btnAddAfEmployee.setVisible(false);
-	         
 	         tvSearchManager.setOnMouseClicked(e ->{
 		         	if(tvSearchManager.getSelectionModel().getSelectedItem()!=null ){
 		         		Employee user = (Employee)tvSearchManager.getSelectionModel().getSelectedItem();
-		         		tfmanagerid.setText(user.getFirstName()+" "+user.getLastName()+"("+user.getEmployeeId()+")");
+		         		//tfmanagerid.setText(user.getFirstName()+" "+user.getLastName()+"("+user.getEmployeeId()+")");
+		         		System.out.println(user.getFirstName() + " " + user.getLastName());
 		         	}
-		           }
-		         );
+		     });
 	    }
 	    
 	    @FXML
 	    void actionAllEmployee(ActionEvent event) {
 	    	 try {
 	    		 
-	    		 String searchname=tfsearchname.getText();
-	    		 List<EmployeeDto> elists=employeeDAO.findManagersByName(searchname);
-	 	    	 ObservableList<Employee> updatesearchnameList= EmpConvert.toObservProFromDto(elists);
-	 	    	 employeeTable.setItems(updatesearchnameList);
-	 	    	 tfsearchname.setText("");
-	             showEmployeeTable(updatesearchnameList);
-	             
-	 	    	 edit(false);
-	 	    	 edit2(false);
-		    	 clear();
-		    	 leftsplit.setDividerPositions(0.98);
-		    	 
+	    		 String updatemanager=tfupdatemanager.getText();
+	    		 List<EmployeeDto> uempdto= employeeDAO.findManagersByName(updatemanager);
+	 	    	 ObservableList<Employee> updatemanagerList= EmpConvert.toObservProFromDto(uempdto);
+	 	    	 employeeTable.setItems(updatemanagerList);
+	 	    	 tfupdatemanager.setText("");
+	    		 		    	 
 	         } catch (SQLException e){
 	             System.out.println("Error occurred " + e);
 	         }
 	    	 btnAddAfEmployee.setVisible(false);
-
+	    	 
 	    }
 	    @FXML
-	    private void showEmployeeTable (ObservableList<Employee> empData)  {
+	    private void showEmpoyeeTable (ObservableList<Employee> empData)  {
 	    	employeeTable.setItems(empData);
 	    }
-	    //버튼을 클릭하여  직원추가 준비 
-	    //버튼을 클릭하여  직원추가 준비 
+	    //버튼을 클릭하여 직원추가 준비 
 	    @FXML
 	    void actionReadyAddEmployee(ActionEvent event) {
 	    	clear();
@@ -354,17 +353,17 @@ public class EmployeeSearchFxController {
 	    	
 	    	 try {
 	    		    //모든 잡을 가져와 잡콤보에 넣기----------------
-	    		    List<String> jlists=employeeDAO.findAllJobs();
-			   		ObservableList<String> jobs=EmpConvert.strList(jlists);
-			        populatejobs(jobs);
+	    		    List<String> sjob=employeeDAO.findAllJobs();
+			   		ObservableList<String> jobs=EmpConvert.strList(sjob);
+			        shoeJobsTable(jobs);
 			        //-----------------------------------
 			        //모든 부서를 가져와 콤보에 넣기-----------------
 			        ObservableList<String> dpnames = FXCollections.observableArrayList();
-			        List<DepartmentDto> dList = employeeDAO.findAllDepartments2();
-			        ObservableList<Department> dlist = DepConvert.toObservProFromDto(dList);
-			        for(Department dd : dlist) {
-			        	dpnames.add(String.format("%s(%d)",dd.getDepartment_name(),dd.getDepartment_id()));
-			        }
+			        List<DepartmentDto> ndlist=employeeDAO.findAllDepartments2 ();
+			        ObservableList<Department> dlists = DepConvert.toObservProFromDto(ndlist);
+			        for (Department dd:dlists) {
+			        	dpnames.add(String.format("%s(%d)", dd.getDepartment_name(),dd.getDepartment_id()));
+					}
 	    			cbdepartid.setItems(dpnames);
 	    	        //--------------------------------------
 		        } catch (SQLException e){
@@ -377,7 +376,7 @@ public class EmployeeSearchFxController {
 	    void actionJobClicked(ActionEvent event) {
 	    	if(cbJobid.getSelectionModel().getSelectedItem()!=null){
 	    		String coms =  cbJobid.getSelectionModel().getSelectedItem().toString();    
-		    	 tfjobid.setText(coms);
+		    	 edit2(true);
 		    	 System.out.println("잡아이디를 선택==========>"+coms);
 	    	}
 	    }
@@ -407,15 +406,14 @@ public class EmployeeSearchFxController {
 	    void actionDepartClicked(ActionEvent event) {
 	    	if(cbdepartid.getSelectionModel().getSelectedItem()!=null){
 	    		String departid =  cbdepartid.getSelectionModel().getSelectedItem().toString();    
-	    		
-		    	 tfdepartid.setText(departid);//여기를 수정할 것.
+	    		edit2(true);
 		    	 System.out.println("부서명(부서아이디)================>"+departid);
 		    	 
 		    	 try {
 		    		 ObservableList<String> dpnames = FXCollections.observableArrayList();
-		    		//부서명을 이용하여 관리자정보를 찾음-------------
-		    		 List<EmployeeDto> empllist=employeeDAO.findEmployeesByDepartName(dep(departid));//depart(59) ==> depart
-					 ObservableList<Employee> employeess= EmpConvert.toObservProFromDto(empllist);
+		    		//부서명을 이용하여 관리자 정보를 찾음-------------
+		    		 List<EmployeeDto> edtos=employeeDAO.findEmployeesByDepartName(dep(departid));//depart(59) ==> depart
+					 ObservableList<Employee> employeess= EmpConvert.toObservProFromDto(edtos);
 			        for (Employee dd:employeess) {
 			        	dpnames.add(String.format("%s %s[%s](%d)", dd.getFirstName(),dd.getLastName(), dd.getEmail(),dd.getEmployeeId()));
 					}
@@ -428,7 +426,7 @@ public class EmployeeSearchFxController {
 	    	}
 	    }
 	    
-	    void populatejobs(ObservableList<String>jobs){
+	    void shoeJobsTable(ObservableList<String>jobs){
 	    	if(cbJobid!=null){
 	    		cbJobid.setItems(jobs);
 	    	}
@@ -445,26 +443,26 @@ public class EmployeeSearchFxController {
 	    
 	    public void handleHelp() {
 	        Alert alert = new Alert (Alert.AlertType.INFORMATION);
-	        alert.setTitle("필수요소를 꼭 입력하십시오.");
+	        alert.setTitle("Employees 테이블 필드 수정");
 	        alert.setHeaderText("필수요소확인");
-	        alert.setContentText("필수요소를 꼭 입력하세요. 필수요소는 파란색입니다..");
+	        alert.setContentText("파란색으로 된 요소만 수정할 수 있습니다.");
 	        alert.show();
 	    }
 	    
 	    
-	    //emp에 추가
+	    //emp 수정
 	    @FXML
-	    void actionAddEmployee(ActionEvent event) {
+	    void actionUpdateEmployee(ActionEvent event) {
 	    	Alert alert = new Alert(AlertType.CONFIRMATION);
 	    	alert.setTitle("Confirmation Dialog");
-	    	alert.setHeaderText("직원의 정보를 입력하시겠습니까?");
-	    	alert.setContentText("정말 입력하시겠습니까?");
+	    	alert.setHeaderText("직원의 정보를 수정하시겠습니까?");
+	    	alert.setContentText("정말 수정하시겠습니까?");
 
 	    	Optional<ButtonType> result = alert.showAndWait();
 	    	if (result.get() != ButtonType.OK){
-	    	   return;
+	    	   return;  //작업 끝냄
 	    	} 
-	    	//String empId=tfempid.getText();
+	    	String empId=tfempid.getText();
 	    	String empfn=tffirstname.getText();
 	    	String empln=tflastname.getText();
 	    	String empmail=tfemail.getText();
@@ -474,28 +472,31 @@ public class EmployeeSearchFxController {
 	    	//-----------------------------------------------
 	    	String emppct=tfcommis.getText();
 	    	String empsal=tfsalary.getText();
-	    	String empdepid=tfdepartid.getText(); //수정필요
-	    	String empjobid=tfjobid.getText();   //수정필요 ->jobid(10)
-	    	String empmanid=tfmanagerid.getText();//수정필요 ->
+	    	String empdepid=tfdepartid.getText(); 
+	    	String empjobid=tfjobid.getText();   
+	    	String empmanid=tfmanagerid.getText();
 	    	System.out.println(String.format("%s,%s,%s,%s,%s", empfn,empln,empmail,emphire,empphone));
 	    	System.out.println(String.format("%s,%s,%s,%s,%s", emppct,empsal,depid(empdepid),empjobid,depid(empmanid)));
 	    	
-	    	
-	    	if(empfn.equals("") || empln.equals("")|| empmail.equals("")||
+	    	if(empId.equals("") || empfn.equals("") || empln.equals("")|| empmail.equals("")||
 	    			emphire.equals("")|| empjobid.equals("")|| empmanid.equals("")){
 	    		handleHelp();
 	    		return;
 	    	}
-	    	
+
 	    	Date dhiredate= PTS.toDaeS(emphire);
+	    	
+	    	System.out.println("emphire-------------------"+emphire);
+	    	System.out.println("dhiredate-------------------"+dhiredate);
 	    	Employee emp=new Employee();
-	    	//emp.setEmployeeId(employeeId);  //자동
+	    	if(!empId.equals("")){
+	    		emp.setEmployeeId(Integer.parseInt(empId));
+	    	}
 	    	emp.setFirstName(empfn);
 	    	emp.setLastName(empln);
 	    	emp.setEmail(empmail);
 	    	emp.setHireDate(dhiredate);
 	    	emp.setPhoneNumber(empphone);
-	    	//
 	    	if(!emppct.equals("")){
 	    		emp.setCommissionPct(Double.parseDouble(emppct));
 	    	}
@@ -506,50 +507,51 @@ public class EmployeeSearchFxController {
 	    		emp.setDepartmentId(Integer.parseInt(depid(empdepid)));
 	    	}
 	    	emp.setJobId(empjobid);
-	    	
 	    	if(!empmanid.equals("")){
 	    		emp.setManagerId(Integer.parseInt(depid(empmanid)));
 	    	}
-	    	
+	    	EmployeeDto edot=EmpConvert.toDto(emp);
 	    	try {
-	    		EmployeeDto empdto=EmpConvert.toDto(emp);
-				int empid=employeeDAO.addEmployee(empdto);
-				if(empid>0){
-					 System.out.println(" addEmployee 성공-------------------------------"+empid);
+	    		System.out.println(" getFirstName------------------------------"+emp.getFirstName());
+	    		System.out.println(" getLastName------------------------------"+emp.getLastName());
+				boolean isS=employeeDAO.updateEmployee(edot);
+				if(isS){
+					 System.out.println(" updateEmployee -------------------------------"+empId);
 		             ObservableList<Employee> empData=FXCollections.observableArrayList();
-		             EmployeeDto edot=employeeDAO.findEmployeeById(""+empid);  
-		             Employee empDat = EmpConvert.toPro(edot);
-		             System.out.println(" findEmployeeById 등록된 emp찾기-------------------------------"+empid);
+		             EmployeeDto eedot=employeeDAO.findEmployeeById(""+empId);  
+		             Employee empDat = EmpConvert.toPro(eedot);
+		             System.out.println(" actionUpdateEmployee 등록된 emp 찾기-------------------------------"+empId);
 		             if(empDat!=null){
 		            	 empData.add(empDat);
-			             showEmployeeTable(empData);
+			             showEmpoyeeTable(empData);
 		             }
 		 	    	 edit(false);
 		 	    	 edit2(false);
 			    	 clear();
+				}else{
+					 System.out.println(" updateEmployee 실패------------------------------"+empId);
 				}
 			} catch (SQLException e) {
-				System.out.println(" actionAddEmployee==>"+e);
+				System.out.println(" actionUpdateEmployee==>"+e);
 			}
 	    	 btnAddAfEmployee.setVisible(false);
 	    }
 		
-
-	    
 	    @FXML
 	    void actionSearchManager(ActionEvent event) {
 	    	
-	    	String searchManagerId=tfsearchmanager.getText();
+	    	String manid=tfsearchmanager.getText();
 	    	ObservableList<Employee> managers=null;
 			try {
-				List<EmployeeDto> emanagers=employeeDAO.findManagersByName(searchManagerId);
-				managers = EmpConvert.toObservProFromDto(emanagers);
+				List<EmployeeDto> edotmana=employeeDAO.findManagersByName(manid);
+				managers = EmpConvert.toObservProFromDto(edotmana);
 				tvSearchManager.setItems(managers);
 		    	tfsearchmanager.setText("");
-		    	
 			} catch (SQLException e) {
+
 			}
 	    }
+	    
 	    @FXML
 	    private Button btnCancelEmployee;
 	    

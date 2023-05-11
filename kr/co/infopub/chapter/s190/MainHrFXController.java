@@ -108,6 +108,8 @@ public class MainHrFXController {
 				piecon.refresh();
 			}
 		});
+		
+	
 	}
 	
 	@FXML
@@ -132,6 +134,7 @@ public class MainHrFXController {
 			//System.exit(0);
 		} else return;
 	}
+
 	
 	@FXML
 	void onHelpAction(ActionEvent event) {
@@ -143,6 +146,7 @@ public class MainHrFXController {
 				+"\n시작은 시작메뉴를 선택하십시오.");
 		alert.show();
 	}
+	
 	
 	@FXML
 	void onMenuction(ActionEvent event) {
@@ -169,6 +173,7 @@ public class MainHrFXController {
 			piecon.refresh();
 		}
 	}
+
 	//메인페인에 각 뷰를 붙인다.
 	public void setView1(BorderPane departView) {
 		this.departView = departView;

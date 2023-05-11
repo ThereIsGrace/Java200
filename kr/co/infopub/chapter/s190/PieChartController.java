@@ -12,8 +12,10 @@ import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import kr.co.infopub.chapter.s190.dto.DepCountConvert;
 import kr.co.infopub.chapter.s190.dto.EmpConvert;
 import kr.co.infopub.chapter.s190.dto.DepCount;
@@ -29,7 +31,6 @@ public class PieChartController {
 	private PieChart pieChart;
 	@FXML
 	private AnchorPane pieAnchor;
-	
 	@FXML
 	private TableView<Employee> employeeTable;
 	@FXML
@@ -73,12 +74,7 @@ public class PieChartController {
 			List<DepCount> dlists = DepCountConvert.toPro(deplist);
 			int total = employeeDAO.getEmployeesTotal();
 			System.out.println("test chart ======================================" + dlists.size() + "     " + total);
-//			db 쿼리로 구하는 것이 더 좋을 것이다.
-//			int total = 0;
-//			for(DepCount dc: dlists) {
-//				total += dc.getCount();
-//			}
-			//final int ftotal = total;
+
 			
 			PieChart pieChart = new PieChart();
 			pieChart.setTitle("부서별 인원수 총" + total + "명 " + PTS.toDay());
@@ -90,7 +86,7 @@ public class PieChartController {
 			pieChart.setPrefHeight(600);
 			final Label caption = new Label("");
 			String value = 
-					"-fx-font-size: 25px;          "
+					"-fx-font-size: 13px;          "
 					+"-fx-font-family: 'Arial Black';         ";
 			
 			caption.setStyle(value);
@@ -118,7 +114,7 @@ public class PieChartController {
 						}
 					);
 			}
-			pieAnchor.getChildren().addAll(pieChart,caption);
+			pieAnchor.getChildren().addAll(pieChart, caption);
 					
 		}catch(SQLException e) {
 			System.out.println(e);

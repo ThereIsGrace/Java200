@@ -8,19 +8,19 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kr.co.infopub.chapter.s190.PieChartController">
    <center>
-      <SplitPane dividerPositions="0.5016722408026756" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.5969551282051282" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <items>
-          <AnchorPane fx:id="pieAnchor" minHeight="0.0" minWidth="0.0" />
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+          <AnchorPane fx:id="pieAnchor" minHeight="0.0" minWidth="0.0" prefHeight="878.0" prefWidth="613.0" />
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="878.0" prefWidth="550.0">
                <children>
-                  <TableView fx:id="employeeTable" layoutY="-1.0" prefHeight="800.0" prefWidth="596.0">
+                  <TableView fx:id="employeeTable" layoutX="-4.0" layoutY="-1.0" prefHeight="880.0" prefWidth="592.0">
                     <columns>
                       <TableColumn fx:id="empIdColumn" prefWidth="88.0" text="EmployeeID" />
                       <TableColumn fx:id="empNameColumn" prefWidth="96.0" text="FirstName" />
                         <TableColumn fx:id="empLastNameColumn" prefWidth="94.0" text="LastName" />
-                        <TableColumn fx:id="empEmailColumn" prefWidth="141.0" text="Email" />
+                        <TableColumn fx:id="empEmailColumn" prefWidth="117.0" text="Email" />
                         <TableColumn fx:id="empPhoneNumberColumn" prefWidth="84.0" text="Phone" />
-                        <TableColumn fx:id="empHireDateColumn" prefWidth="93.0" text="Hire Date" />
+                        <TableColumn fx:id="empHireDateColumn" prefWidth="117.0" text="Hire Date" />
                     </columns>
                   </TableView>
                </children>

@@ -26,36 +26,37 @@ public class Main extends Application {
 	
 	public void showHR() {
 		try {
-//			FXMLLoader loader = new FXMLLoader();
-//			loader.setLocation(Main.class.getResource("view/MainHrFx.fxml"));
-//			root = (BorderPane) loader.load();
-//			MainHrFXController empcon = loader.getController();
-//			//----------여기에 소스 추가
-//			FXMLLoader loader4 = new FXMLLoader();
-//			loader4.setLocation(Main.class.getResource("view/DepTabView.fxml"));
-//			BorderPane departView = (BorderPane)loader4.load();
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/MainHrFx.fxml"));
+			root = (BorderPane) loader.load();
+			MainHrFXController empcon = loader.getController();
+
+			FXMLLoader loader4 = new FXMLLoader();
+			loader4.setLocation(Main.class.getResource("view/DepTabView.fxml"));
+			BorderPane departView = (BorderPane)loader4.load();
 			
-//			FXMLLoader loader2 = new FXMLLoader();
-//			loader2.setLocation(Main.class.getResource("view/ManagerFx.fxml"));
-//			root = (BorderPane) loader2.load();
-//			
+			FXMLLoader loader2 = new FXMLLoader();
+			loader2.setLocation(Main.class.getResource("view/ManagerFx.fxml"));
+			BorderPane emptvView = loader2.load();
+			
 			FXMLLoader loader1 = new FXMLLoader();
 			loader1.setLocation(Main.class.getResource("view/EmployeeSearchFx.fxml"));
-			root = (BorderPane) loader1.load();
-//			
-//			FXMLLoader loader3 = new FXMLLoader();
-//			loader3.setLocation(Main.class.getResource("view/EmployeeUpdateFx.fxml"));
-//			BorderPane empupdateView = (BorderPane) loader3.load();
-//			
-//			FXMLLoader loader5 = new FXMLLoader();
-//			loader5.setLocation(Main.class.getResource("view/DepChartView.fxml"));
-//			
-//			empcon.setView1(departView);
-//			empcon.setView2(emptvView);
-//			empcon.setView(empsearchView);
-//			empcon.setView3(empupdateView);
-//			empcon.setView4(loader5);
-//			//------여기에 소스 추가
+			BorderPane empsearchView = loader1.load();
+			
+			FXMLLoader loader3 = new FXMLLoader();
+			loader3.setLocation(Main.class.getResource("view/EmployeeUpdateFx2.fxml"));
+			BorderPane empupdateView = loader3.load();
+			
+			FXMLLoader loader5 = new FXMLLoader();
+			loader5.setLocation(Main.class.getResource("view/DepChartView.fxml"));
+			
+			
+			empcon.setView1(departView);
+			empcon.setView2(emptvView);
+			empcon.setView(empsearchView);
+			empcon.setView3(empupdateView);
+			empcon.setView4(loader5);
+
 			Scene scene = new Scene(root,1250,880);
 			
 			scene.getStylesheets().add(Main.class.getResource("view/application.css").toExternalForm());
@@ -67,6 +68,7 @@ public class Main extends Application {
 			});
 		}catch(Exception e) {
 			System.out.println(" start에서 Error :" + e);
+			e.printStackTrace();
 		}
 	}
 }

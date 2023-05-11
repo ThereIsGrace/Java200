@@ -109,13 +109,12 @@ public class EmployeeDAO extends DataBase{
 				DepartmentDto bp = new DepartmentDto();
 				bp.setDepartment_name(rs.getString("DEPARTMENT_NAME"));
 				bp.setDepartment_id(rs.getInt("DEPARTMENT_ID"));
-				bp.setLocation_id(rs.getInt("LOCATION_ID"));
-				bp.setManager_id(rs.getInt("MANAGER_ID"));
 				empList.add(bp);
 			}
 			log("5/6 findAllDepartments Success!!!");
 		}catch(SQLException e) {
 			log("findAllDepartments Error!!!",e);
+			e.printStackTrace();
 		}finally {
 			close(conn, psmt, rs);
 		}
@@ -324,7 +323,7 @@ public class EmployeeDAO extends DataBase{
 		Connection conn = null;
 		PreparedStatement psmt = null;
 		ResultSet rs = null;
-		List<String> jobList = null;
+		List<String> jobList = new ArrayList<>();
 		try {
 			conn = getConnection();
 			psmt = conn.prepareStatement(SQL);
@@ -506,86 +505,83 @@ public class EmployeeDAO extends DataBase{
 		}
 		return empList;	
 	}
-	public int addEmployee(EmployeeDto emp) throws SQLException{
-		String SQL = ""+ 
-		"INSERT INTO EMPLOYEES                     "
-		+ " (EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL,              "
-		+ " PHONE_NUMBER, HIRE_DATE, JOB_ID, SALARY,                 "
-		+ " COMMISSION_PCT, MANAGER_ID, DEPARTMENT_ID )             "
-		+ " VALUES(EMPLOYEES_SEQ.NEXTVAL,?,?,?,"
-		+ "?,?,?"
-		+ " ,"+quots(emp.getSalary()+"")
-		+ " ,"+quots(emp.getCommission_pct()+"")
-		+ " ,"+quoti(emp.getManager_id()+"")
-		+ " ,"+quoti(emp.getDepartment_id()+"")
-		+") ";
-		String SQL2 = " SELECT EMPLOYEES_SEQ.CURRVAL FROM EMPLOYEES ";
-		
-		Connection conn = null;
-		PreparedStatement psmt = null;
-		ResultSet rs = null;
-		int count = 0;
-		try {
-			conn = getConnection();
-			conn.setAutoCommit(true);              //TRX
-			psmt = conn.prepareStatement(SQL);
-			int i = 1;
-			//아이디는 시퀀스 -> 자동입력
-			//EMPLOYEE_ID -> SEQUENCE_EMPLOYEE.NEXTVAL
-			psmt.setString(i++, emp.getFirst_name());      //FIRST_NAME
-			psmt.setString(i++, emp.getLast_name());       //LAST_NAME
-			psmt.setString(i++, emp.getEmail());              //EMAIL
-			psmt.setString(i++, emp.getPhone_number());     //PHONE_NUMBER
-			psmt.setDate(i++, (java.sql.Date)emp.getHire_date());   //HIRE_DATE
-			psmt.setString(i++, emp.getJob_id());           //JOB_ID
-			
-			log(SQL,"addEmployee", emp);
-			log("3/6 addEmployee Success 1!!!");
-			psmt.executeUpdate();
-			log("4/6 addEmployee Success 1!!!");
-			log("3/6 addEmployee Success 2!!!");
-			psmt = conn.prepareStatement(SQL2);
-			rs = psmt.executeQuery();
-			if(rs.next()) {
-				count = rs.getInt(1);
-			}
-			log("4/6 addEmployee Success 2 !!!");
-			conn.commit();
-		}catch(SQLException e) {
-			log(" addEmployee Error!!!",e);
-			conn.rollback();
-			throw e;
-		}finally {
-			conn.setAutoCommit(true);
-			close(conn, psmt, rs);
+	@SuppressWarnings("resource")
+	public  int addEmployee (EmployeeDto emp) throws SQLException {
+		 String SQL =""+
+                 "INSERT INTO EMPLOYEES	          " 
+                 + " (EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL,          "
+                 + " PHONE_NUMBER,  HIRE_DATE, JOB_ID, SALARY,          "
+                 + " COMMISSION_PCT,MANAGER_ID,DEPARTMENT_ID )	          " 
+                 + " VALUES(EMPLOYEES_SEQ.NEXTVAL,?,?,?,"
+                 + " ?,?,?"
+                 + " ,"+quots(emp.getSalary()+"")
+                 + " ,"+quots(emp.getCommission_pct()+"")
+                 + " ,"+quoti(emp.getManager_id()+"")
+                 + " , "+quoti(emp.getDepartment_id()+"")
+                 + ") " ; 
+		  String SQL2=" SELECT EMPLOYEES_SEQ.CURRVAL FROM EMPLOYEES ";
+		  
+		  Connection conn=null;
+		  PreparedStatement psmt=null;
+		  ResultSet rs=null;
+		  int count=0;
+		  try {
+			  conn=getConnection();
+			  conn.setAutoCommit(false);      //TRX
+	          psmt=conn.prepareStatement(SQL);
+	          int i=1;
+	          //아이디는 시퀀스 -> 자동입력						//EMPLOYEE_ID-> SEQUENCE_EMPLOYEE.NEXTVAL
+	          psmt.setString(i++,emp.getFirst_name());   //FIRST_NAME
+	          psmt.setString(i++,emp.getLast_name());    //LAST_NAME
+	          psmt.setString(i++,emp.getEmail());		//EMAIL
+	          psmt.setString(i++,emp.getPhone_number()); //PHONE_NUMBER
+	          psmt.setDate(i++, (java.sql.Date)emp.getHire_date());//HIRE_DATE
+	          psmt.setString(i++,emp.getJob_id());		//JOB_ID
+	         
+	          log(SQL,"addEmployee",emp);
+	          log("3/6 addEmployee Success 1!!!");
+	          psmt.executeUpdate();
+	          log("4/6 addEmployee Success 1!!!");
+	          log("3/6 addEmployee Success 2!!!");
+	          psmt=conn.prepareStatement(SQL2);
+	          rs=psmt.executeQuery();
+	          if(rs.next()){
+	        	  count=rs.getInt(1);
+	          }
+	          log("4/6 addEmployee Success 2 !!!");
+	          conn.commit();
+		  } catch (SQLException e) {
+			  log(" addEmployee Error!!!",e);
+			  e.printStackTrace();
+			  conn.rollback();
+			  throw e;
+		  }finally{
+			  conn.setAutoCommit(true);
+	      	  close(conn, psmt, rs);
+	      }
+	      return count;
 		}
-		return count;
-	}
+	
 	
 	public boolean updateEmployee(EmployeeDto emp) throws SQLException{
 		String SQL = ""
 		+ "UPDATE EMPLOYEES SET                         "
 		+ " FIRST_NAME = ?, LAST_NAME = ?, EMAIL = ?,                         "
-		+ " PHONE_NUMBER = ?, JOB_ID = ?,                                     "
-		+ " SALARY = %s, COMMISSION_PCT = %s, MANAGER_ID = %s, DEPARTMENT_ID = %s               "
+		+ " PHONE_NUMBER = ?                     "
 		+ " WHERE EMPLOYEE_ID = ?                           ";
 		
-		String sql = String.format(SQL, quotd(emp.getSalary()+""),quoti(emp.getCommission_pct()+""),
-				quoti(emp.getManager_id()+""),quoti(emp.getDepartment_id()+""));
 		Connection conn = null;
 		PreparedStatement psmt = null;
 		ResultSet rs = null;
 		int count = 0;
 		try {
 			conn = getConnection();
-			psmt = conn.prepareStatement(sql);
+			psmt = conn.prepareStatement(SQL);
 			int i = 1;
 			psmt.setString(i++, emp.getFirst_name());
 			psmt.setString(i++, emp.getLast_name());
 			psmt.setString(i++, emp.getEmail());
 			psmt.setString(i++, emp.getPhone_number());
-			psmt.setDate(i++, (java.sql.Date)emp.getHire_date());   //HIRE_DATE
-			psmt.setString(i++, emp.getJob_id());
 			psmt.setInt(i++, emp.getEmployee_id());
 			//SALARY
 			//COMMISSION_PCT
@@ -636,7 +632,7 @@ public class EmployeeDAO extends DataBase{
 		}
 		return count >= 0? true: false;
 	}
-	public boolean deleteEmployee (EmployeeDto emp) throws SQLException{
+/*	public boolean deleteEmployee (EmployeeDto emp) throws SQLException{
 		String SQL = ""
 				+ " DELETE FROM EMPLOYEES                   "
 				+ " WHERE EMPLOYEE_ID = ?                   ";
@@ -659,4 +655,5 @@ public class EmployeeDAO extends DataBase{
 		}
 		return count>0?true:false;
 	}
+	*/
 }
